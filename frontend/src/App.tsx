@@ -4,8 +4,10 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import './App.css'
 
-import { Button, createTheme, CssBaseline, ThemeProvider, Typography } from "@mui/material";
+import { Button, Container, createTheme, CssBaseline, Stack, ThemeProvider, Typography } from "@mui/material";
 import PageLayout from './components/PageLayout'
+import UserList from './components/UserList'
+import Login from './components/Login'
 const theme = createTheme({
   palette: {
     mode: 'dark',
@@ -52,6 +54,7 @@ function App() {
   const [count, setCount] = useState(0)
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
 
   async function comprobarBackend() {
     setCargando(true);
@@ -79,9 +82,10 @@ function App() {
   return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
-            <div className='app'>
+             <Container maxWidth="sm" sx={{ py: 4 }}>
                 <PageLayout title='MyMys'>
-                    <Typography variant='h4' component="div" sx={{ flexGrow: 1, alignContent: "center" }}> MyMysages App</Typography>
+                  <Stack spacing={3}>
+                    <Typography variant='h4' component="div" sx={{ flexGrow: 1, alignContent: "center" }}> MyMyssages App</Typography>
                      <Button
                       variant="contained"
                       onClick={comprobarBackend}
@@ -93,8 +97,21 @@ function App() {
                     <Typography sx={{ marginTop: 2 }} role="status">
                       {mensaje}
                     </Typography>
+                    
+                    {token ? (
+                      <>
+                        <Button onClick={() => setToken(null)}>
+                          Cerrar sesión
+                        </Button>
+
+                        <UserList token={token} />
+                      </>
+                    ) : (
+                      <Login onLogin={setToken} />
+                    )}
+                    </Stack>
                 </PageLayout>
-            </div>
+            </Container>
     </ThemeProvider>
   )
 }

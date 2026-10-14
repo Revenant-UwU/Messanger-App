@@ -30,7 +30,10 @@ export class AuthService {
    * Répond 401 si le token est absent ou invalide.
    */
   static authorize(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    const token = req.get("Authorization");
+    const authorization = req.get("Authorization");
+    const match = authorization?.match(/^Bearer\s+(\S+)$/i);
+    const token = match?.[1];
+
     if (!token) {
       LoggerService.error("Missing Authorization header");
       return res.sendStatus(401);
@@ -38,7 +41,7 @@ export class AuthService {
 
     const payload = verifyToken(token);
     if (!payload) {
-      console.log("Token rejeté");
+      console.log("Rejected Token");
       return res.sendStatus(401);
     }
     req.user = payload; // disponible dans les middlewares et routes suivants
