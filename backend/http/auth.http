@@ -1,0 +1,92 @@
+@server = http://localhost:3000
+
+### Inscription (renvoie un token, l'utilisateur est directement connecté)
+# @name register
+POST {{server}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "alice@wonder.land",
+  "password": "P0PP3T",
+  "username": "Alice_4000"
+}
+### Inscription 2
+#
+POST {{server}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "cat@wonder.land",
+  "password": "PartyTea55",
+  "username": "Catnip"
+}
+
+### Inscription 3
+#
+POST {{server}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "john_deep@wonder.land",
+  "password": "SparrowOlantern",
+  "username": "SaneHatter"
+}
+
+### Inscription avec un email déjà utilisé -> 409
+POST {{server}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "alice@wonder.land",
+  "password": "x",
+  "username": "Alice_4000"
+}
+
+### Inscription avec un corps invalide -> 400
+POST {{server}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "pas-un-email",
+  "password": ""
+}
+
+### Connexion
+# @name login
+POST {{server}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@wonder.land",
+  "password": "P0PP3T"
+}
+
+### Connexion admin
+# @name adminLogin
+POST {{server}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "queen@wonder.land",
+  "password": "P0PP3T"
+}
+
+### Mauvais mot de passe -> 401
+POST {{server}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@wonder.land",
+  "password": "Pasword1234"
+}
+
+### Qui suis-je ? (nécessite un token)
+GET {{server}}/auth/me
+Authorization: {{login.response.body.token}}
+
+### Sans token -> 401
+GET {{server}}/auth/me
+
+### Token forgé à la main (base64 d'un email existant)... ça passe ! À corriger plus tard dans le cours.
+GET {{server}}/auth/me
+Authorization: YWRtaW5AbWlhbW1pYW0uYmU=
