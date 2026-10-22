@@ -8,6 +8,8 @@ import { Button, Container, createTheme, CssBaseline, Stack, ThemeProvider, Typo
 import PageLayout from './components/PageLayout'
 import UserList from './components/UserList'
 import Login from './components/Login'
+import Register from './components/Register';
+import UserSearch from './components/UserSearch'
 const theme = createTheme({
   palette: {
     mode: 'dark',
@@ -100,6 +102,13 @@ function App() {
                     
                     {token ? (
                       <>
+                        <UserSearch
+                          token={token}
+                          onSelect={(user) => {
+                            console.log("Selected user:", user);
+                            // Open their profile or conversation here.
+                          }}
+                        />
                         <Button onClick={() => setToken(null)}>
                           Cerrar sesión
                         </Button>
@@ -107,7 +116,14 @@ function App() {
                         <UserList token={token} />
                       </>
                     ) : (
+                      <Stack direction={{xs:'column', sm:'row' }} spacing={4} sx={{ alignItems: 'flex-start' }}>
+                         <Stack spacing={2} sx={{ flex: 1, minWidth: 0, width: '100%' }}>
+                      <Register onLogin={setToken} />
+                         </Stack>
+                      <Stack spacing={2} sx={{ flex: 1, minWidth: 0, width: '100%' }}>
                       <Login onLogin={setToken} />
+                         </Stack>
+                      </Stack>
                     )}
                     </Stack>
                 </PageLayout>

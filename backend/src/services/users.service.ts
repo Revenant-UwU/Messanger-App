@@ -47,6 +47,40 @@ export class UsersService extends AbstractService {
     }
     return undefined;
   }
+  /**
+   * Get an user by their username= Just one
+   */
+  static getByUsername(username: string): User | undefined {
+    const users = this.readUsersDB();
+    for (const user of users) {
+      if (user.username.toLowerCase() === username.toLowerCase()) {
+        return user;
+      }
+    }
+    return undefined;
+  }
+  /**
+   * 
+   * @param query Username trying to autocompleat
+   * @returns 
+   */
+  static async searchUsers(query: string) {
+  const search = query.trim().toLowerCase();
+
+  if (search.length < 2) return [];
+
+  const users = await this.getAll();
+
+  return users
+    .filter((user) =>
+      user.username.toLowerCase().includes(search),
+    )
+    .slice(0, 10)
+    .map((user) => ({
+      id: user.id,
+      username: user.username,
+    }));
+}
 
   /**
    * Crée un utilisateur (rôle "user" par défaut).
@@ -57,6 +91,10 @@ export class UsersService extends AbstractService {
 
     if (this.getByEmail(newUser.email)) {
       LoggerService.error("Email already exists: " + newUser.email);
+      return undefined;
+    }
+    if (this.getByUsername(newUser.username)) {
+      LoggerService.error("Username already in use: " + newUser.username);
       return undefined;
     }
     const hashedPassword = await hashPassword(newUser.password);

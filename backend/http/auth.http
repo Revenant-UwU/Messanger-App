@@ -82,7 +82,7 @@ Content-Type: application/json
 
 ### Qui suis-je ? (nécessite un token)
 GET {{server}}/auth/me
-Authorization: {{login.response.body.token}}
+Authorization: Bearer {{login.response.body.$.token}}
 
 ### Sans token -> 401
 GET {{server}}/auth/me

@@ -22,28 +22,32 @@ Content-Type: application/json
 
 ### Tous les utilisateurs (admin)
 GET {{server}}/users
-Authorization: {{adminLogin.response.body.token}}
+Authorization: Bearer {{adminLogin.response.body.$.token}}
 
 ### Tous les utilisateurs avec un compte user -> 403
 GET {{server}}/users
-Authorization: {{login.response.body.token}}
+Authorization: Bearer {{login.response.body.$.token}}
 
 ### Mon profil complet (alice consulte alice)
-GET {{server}}/users/1
-Authorization: {{login.response.body.token}}
+GET {{server}}/users/2
+Authorization: Bearer {{login.response.body.$.token}}
 
 ### Le profil public d'un autre utilisateur (alice consulte bob)
 GET {{server}}/users/3
-Authorization: {{login.response.body.token}}
+Authorization: Bearer {{login.response.body.$.token}}
 
 ### Utilisateur inexistant -> 404
 GET {{server}}/users/99
-Authorization: {{login.response.body.token}}
+Authorization: Bearer {{login.response.body.$.token}}
 
 ### Supprimer un utilisateur (admin) -> 204
 DELETE {{server}}/users/3
-Authorization: {{adminLogin.response.body.token}}
+Authorization: Bearer {{adminLogin.response.body.$.token}}
 
 ### Supprimer un utilisateur avec un compte user -> 403
 DELETE {{server}}/users/2
-Authorization: {{login.response.body.token}}
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Get an user by their username (Not case sensitve)
+GET {{server}}/users/username/alice_4000
+Authorization: Bearer {{login.response.body.$.token}}
