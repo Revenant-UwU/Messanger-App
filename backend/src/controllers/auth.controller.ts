@@ -50,9 +50,10 @@ authController.post("/login", async (req: Request, res: Response) => {
  * GET /auth/me
  * Renvoie l'utilisateur correspondant au token
  */
-authController.get("/me", AuthService.authorize, (req: AuthenticatedRequest, res: Response) => {
+authController.get("/me", AuthService.authorize, async (req: AuthenticatedRequest, res: Response) => {
   LoggerService.info("[GET] /auth/me");
-  const user = UsersService.getByEmail(req.user!.email);
+  if (!req.user) return res.sendStatus(401);
+  const user = await UsersService.getById(req.user.id);
   if(!user) return res.sendStatus(401); 
   const userDTO: UserDTO = UsersMapper.toDTO(user);
   return res.status(200).json(userDTO);

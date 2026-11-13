@@ -13,11 +13,11 @@ export const usersController = Router();
  * GET /users
  * Tous les utilisateurs (admin uniquement)
  */
-usersController.get("/", AuthService.authorize, (req: AuthenticatedRequest, res: Response) => {
+usersController.get("/", AuthService.authorize, async (req: AuthenticatedRequest, res: Response) => {
   LoggerService.info("[GET] /users");
   const user = req.user;
  
-  const users = UsersService.getAll();
+  const users = await UsersService.getAll();
   if (user?.role == "admin"){
     const usersDTO: UserDTO[] = [];
     for (const user of users) {
@@ -52,7 +52,7 @@ usersController.get("/search", AuthService.authorize, async (req: AuthenticatedR
  * GET /users/:id
  * Un utilisateur : informations complètes pour soi-même ou un admin, publiques sinon
  */
-usersController.get("/:id", AuthService.authorize, (req: AuthenticatedRequest, res: Response) => {
+usersController.get("/:id", AuthService.authorize, async (req: AuthenticatedRequest, res: Response) => {
   LoggerService.info("[GET] /users/:id");
 
   if (!req.user) return res.sendStatus(401);
@@ -61,7 +61,7 @@ usersController.get("/:id", AuthService.authorize, (req: AuthenticatedRequest, r
   const id = Number(req.params.id);
   if (!Number.isInteger(id) || id < 1) return res.sendStatus(400);
 
-  const user = UsersService.getById(id);
+  const user = await UsersService.getById(id);
   if (!user) return res.sendStatus(404);
 
   if (currentUser.id === user.id || currentUser.role === ERole.ADMIN) {
@@ -77,7 +77,7 @@ usersController.get("/:id", AuthService.authorize, (req: AuthenticatedRequest, r
  * GET /users/:username
  * Un utilisateur : informations complètes pour soi-même ou un admin, publiques sinon
  */
-usersController.get("/username/:username", AuthService.authorize, (req: AuthenticatedRequest, res: Response) => {
+usersController.get("/username/:username", AuthService.authorize, async (req: AuthenticatedRequest, res: Response) => {
   LoggerService.info("[GET] /users/username/:username");
 
   if (!req.user) return res.sendStatus(401);
@@ -86,7 +86,7 @@ usersController.get("/username/:username", AuthService.authorize, (req: Authenti
   const username = req.params.username;
   if (!isString(username)) return res.sendStatus(400);
 
-  const user = UsersService.getByUsername(username);
+  const user = await UsersService.getByUsername(username);
   if (!user) return res.sendStatus(404);
 
   if (currentUser.id === user.id || currentUser.role === ERole.ADMIN) {
@@ -103,7 +103,7 @@ usersController.get("/username/:username", AuthService.authorize, (req: Authenti
  * DELETE /users/:id
  * Supprime un utilisateur (admin uniquement, pas soi-même)
  */
-usersController.delete("/:id", AuthService.authorize, AuthService.isAdmin, (req: AuthenticatedRequest, res: Response) => {
+usersController.delete("/:id", AuthService.authorize, AuthService.isAdmin, async (req: AuthenticatedRequest, res: Response) => {
   LoggerService.info("[DELETE] /users/:id");
 
   if (!req.user) return res.sendStatus(401);
@@ -113,9 +113,8 @@ usersController.delete("/:id", AuthService.authorize, AuthService.isAdmin, (req:
   if (!Number.isInteger(id) || id < 1) return res.sendStatus(400);
   if (id === currentUser.id) return res.sendStatus(400);
 
-  if (!UsersService.getById(id)) return res.sendStatus(404);
-
-  if (!UsersService.delete(id)) return res.sendStatus(500);
+  const deleted = await UsersService.delete(id);
+  if (!deleted) return res.sendStatus(404);
 
   return res.sendStatus(204);
 });
