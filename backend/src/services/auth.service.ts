@@ -12,7 +12,7 @@ export class AuthService {
    * @returns un token si l'email et le mot de passe sont corrects, undefined sinon
    */
   static async login(email: string, password: string): Promise<string | undefined> {
-    const user = UsersService.getByEmail(email);
+    const user = await UsersService.getByEmail(email);
     if (!user) return undefined;
     
     const isMatch = await bcrypt.compare(password, user.password);
